@@ -1,6 +1,6 @@
 # Sandbox Digilocker Flutter SDK
 
-A Flutter SDK that provides an embedded digilocker integration in your app. This SDK allows you to integrate Sandbox's Digilocker SDK seamlessly into your Flutter applications.
+A Flutter SDK that provides an embedded Digilocker integration in your app. This SDK allows you to integrate Sandbox's Digilocker SDK seamlessly into your Flutter applications.
 
 ## Features
 
@@ -15,7 +15,7 @@ Add the Sandbox Digilocker SDK to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  sandbox_digilocker_sdk: ^1.0.0-SNAPSHOT
+  sandbox_digilocker_sdk: ^1.0.0-alpha
 ```
 
 ## Usage
