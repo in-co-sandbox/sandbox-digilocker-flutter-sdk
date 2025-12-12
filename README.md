@@ -191,7 +191,7 @@ Appearance configuration for the SDK.
 
 ## Getting Help
 
-For more information about Quicko's tax services, visit:
+For more information about Sandbox API's services, visit:
 - **Homepage**: https://sandbox.co.in
 - **Demo**: https://demo.sandbox.co.in/kyc/digilocker
 - **Documentation**: https://developer.sandbox.co.in
