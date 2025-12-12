@@ -8,7 +8,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:sandbox_digilocker_sdk/sandbox_digilocker_sdk.dart';
 import 'package:sandbox_digilocker_sdk/src/events/events.dart';
 
-
 part 'ui/digilocker_sdk.dart';
 
 class DigilockerSDK {
@@ -20,7 +19,7 @@ class DigilockerSDK {
 
   static const String redirectUrl = 'https://sdk.sandbox.co.in/kyc/digilocker';
   String? apiKey;
-  EventListener? eventListener;
+  EventListener? _eventListener;
   Map<String, dynamic> options = {};
 
   void setAPIKey(String apiKey) {
@@ -28,6 +27,10 @@ class DigilockerSDK {
       throw Exception('API key must start with "key_".');
     }
     this.apiKey = apiKey;
+  }
+
+  void setEventListener(EventListener listener) {
+    _eventListener = listener;
   }
 
   Future<void> open({required BuildContext context, required Map<String, dynamic> options}) async {
@@ -42,9 +45,11 @@ class DigilockerSDK {
     await Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) {
-          return _DigilockerSdk(onClose: () {
-            Navigator.of(context).pop();
-          });
+          return _DigilockerSdk(
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+          );
         },
         fullscreenDialog: true,
         title: 'DigiLocker | Sandbox',

@@ -70,8 +70,8 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   }
 
   void _triggerEventListener(Map<String, dynamic> event) {
-    if (DigilockerSDK.instance.eventListener != null) {
-      DigilockerSDK.instance.eventListener!.onEvent(event);
+    if (DigilockerSDK.instance._eventListener != null) {
+      DigilockerSDK.instance._eventListener!.onEvent(event);
     } else {
       debugPrint('No event listener set.');
     }
