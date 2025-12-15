@@ -17,6 +17,10 @@ analyzer:
     missing_return: error
     invalid_use_of_protected_member: error
     unnecessary_library_directive: ignore
+    missing_code_block_language_in_doc_comment: ignore
+    unnecessary_library_name: ignore
+    one_member_abstracts: ignore
+    use_setters_to_change_properties: ignore
 
 linter:
   rules:

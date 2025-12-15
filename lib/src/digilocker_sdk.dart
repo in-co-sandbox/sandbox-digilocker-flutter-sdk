@@ -10,6 +10,17 @@ import 'package:sandbox_digilocker_sdk/src/events/events.dart';
 
 part 'ui/digilocker_sdk.dart';
 
+/// Provides a singleton instance for managing Digilocker SDK interactions.
+///
+/// Use [DigilockerSDK.instance] to access the singleton. This class handles
+/// authentication, event listening, and opening the Digilocker UI flow.
+///
+/// Example usage:
+/// ```
+/// DigilockerSDK.instance.setAPIKey('key_xxx');
+/// DigilockerSDK.instance.setEventListener(myListener);
+/// await DigilockerSDK.instance.open(context: context, options: {...});
+/// ```
 class DigilockerSDK {
   static final DigilockerSDK _instance = DigilockerSDK._internal();
 
