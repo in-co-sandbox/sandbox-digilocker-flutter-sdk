@@ -49,12 +49,11 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     try {
       final eventType = event['type'] as String?;
       if (eventType == Events.initialized.value) {
-        final options = DigilockerSDK.instance.options;
-        options['api_key'] = DigilockerSDK.instance.apiKey;
+        final options = DigilockerSDK.instance._options;
+        options['api_key'] = DigilockerSDK.instance._apiKey;
         final readyEvent = _prepareEvent(Events.ready.value, options);
         controller.evaluateJavascript(
-          source:
-              '''
+          source: '''
             window.postMessage(${jsonEncode(readyEvent)}, '*');
           ''',
         );

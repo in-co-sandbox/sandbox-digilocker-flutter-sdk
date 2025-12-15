@@ -15,7 +15,7 @@ Add the Sandbox Digilocker SDK to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  sandbox_digilocker_sdk: ^1.0.0-alpha
+  sandbox_digilocker_sdk: ^1.0.0
 ```
 
 ## Usage
@@ -38,7 +38,7 @@ await DigilockerSDK.instance.open(
         "session_id": "a7fac865-61a9-4589-b80c....",
         "brand": {
             "name": "MoneyApp",
-            "logo_url": "https://example.com/your_logo"
+            "logo_url": "https://i.imgur.com/vMd9Wcu.png"
         },
         "theme": {
             "mode": "light",
@@ -79,10 +79,10 @@ class MainApp extends StatelessWidget {
                     options: {
                       'session_id': '6b0c94d2-7c87-4d21-....',
                       'brand': {
-                        'name': "Quicko",
-                        'logo_url': "https://cdn.your_logo.svg/",
+                        'name': 'MoneyApp',
+                        'logo_url': 'https://i.imgur.com/vMd9Wcu.png',
                       },
-                      'theme': {'mode': 'light', 'seed': '#2962FF'},
+                      'theme': {'mode': 'light', 'seed': '#3D6838'},
                     },
                   );
                 },

@@ -26,10 +26,10 @@ class MainApp extends StatelessWidget {
                     options: {
                       'session_id': '6b0c94d2-7c87-4d21-....',
                       'brand': {
-                        'name': "Quicko",
-                        'logo_url': "https://cdn.your_logo.svg/",
+                        'name': 'MoneyApp',
+                        'logo_url': 'https://i.imgur.com/vMd9Wcu.png',
                       },
-                      'theme': {'mode': 'light', 'seed': '#2962FF'},
+                      'theme': {'mode': 'light', 'seed': '#3D6838'},
                     },
                   );
                 },
