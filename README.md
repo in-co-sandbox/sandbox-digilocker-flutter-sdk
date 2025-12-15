@@ -186,8 +186,7 @@ Appearance configuration for the SDK.
 
 ## Requirements
 
-- Flutter SDK: ^3.8.1
-- Flutter: >=1.17.0
+- Flutter SDK: ^3.10.1
 
 ## Getting Help
 

@@ -1,17 +1,26 @@
 part of '../digilocker_sdk.dart';
 
+/// Internal widget that displays the DigiLocker SDK web view and handles communication.
+///
+/// This widget is not intended to be used directly. It is shown as a modal page
+/// when the SDK is opened via [DigilockerSDK.open].
 class _DigilockerSdk extends StatefulWidget {
+  /// Callback invoked when the DigiLocker flow is closed.
   final VoidCallback onClose;
 
+  /// Creates a [_DigilockerSdk] widget.
   const _DigilockerSdk({required this.onClose});
 
   @override
   State<_DigilockerSdk> createState() => _DigilockerSdkState();
 }
 
+/// State for the [_DigilockerSdk] widget.
 class _DigilockerSdkState extends State<_DigilockerSdk> {
+  /// WebView settings for the DigiLocker SDK web view.
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
+  /// Builds the DigiLocker SDK web view UI.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +41,10 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     );
   }
 
+  /// Handles events received from the web view via JavaScript channel.
+  ///
+  /// [event] is the event data from the web view.
+  /// [controller] is the web view controller for executing JavaScript.
   void _handleEvent(Map<String, dynamic> event, InAppWebViewController controller) {
     try {
       final eventType = event['type'] as String?;
@@ -57,6 +70,11 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     }
   }
 
+  /// Prepares an event object to send to the web view.
+  ///
+  /// [type] is the event type string.
+  /// [data] is the event payload.
+  /// Returns a map representing the event.
   Map<String, dynamic> _prepareEvent(String type, Map<String, dynamic> data) {
     final event = {
       'specversion': '1.0',
@@ -69,6 +87,9 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     return event;
   }
 
+  /// Triggers the registered [EventListener] with the given [event].
+  ///
+  /// If no event listener is set, logs a debug message.
   void _triggerEventListener(Map<String, dynamic> event) {
     if (DigilockerSDK.instance._eventListener != null) {
       DigilockerSDK.instance._eventListener!.onEvent(event);

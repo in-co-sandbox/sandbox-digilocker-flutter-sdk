@@ -22,6 +22,10 @@ class DigilockerSDK {
   EventListener? _eventListener;
   Map<String, dynamic> options = {};
 
+  /// Sets the API key for authenticating requests to the DigiLocker SDK.
+  ///
+  /// The [apiKey] must start with 'key_'.
+  /// Throws an [Exception] if the key is invalid.
   void setAPIKey(String apiKey) {
     if (!apiKey.startsWith('key_')) {
       throw Exception('API key must start with "key_".');
@@ -29,10 +33,17 @@ class DigilockerSDK {
     this.apiKey = apiKey;
   }
 
+  /// Registers an [EventListener] to receive DigiLocker SDK events.
+  ///
+  /// The [listener] will be notified of events during the SDK flow.
   void setEventListener(EventListener listener) {
     _eventListener = listener;
   }
 
+  /// Opens the DigiLocker SDK UI as a modal page.
+  ///
+  /// Requires a [context] for navigation and a map of [options] for configuration.
+  /// Throws an [Exception] if the API key is not set or required options are missing.
   Future<void> open({required BuildContext context, required Map<String, dynamic> options}) async {
     if (apiKey == null) {
       throw Exception('API key not set. Call setAPIKey() before opening.');
@@ -57,6 +68,9 @@ class DigilockerSDK {
     );
   }
 
+  /// Validates the required options for the DigiLocker SDK.
+  ///
+  /// Throws an [Exception] if any required option is missing.
   void _validateOptions(Map<String, dynamic> options) {
     if (!options.containsKey('brand')) {
       throw Exception('Option "brand" is required.');
