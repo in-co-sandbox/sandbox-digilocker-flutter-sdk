@@ -22,7 +22,7 @@ class DigilockerSDK {
   EventListener? _eventListener;
   Map<String, dynamic> options = {};
 
-  /// Sets the API key for authenticating requests to the DigiLocker SDK.
+  /// Sets the API key for authenticating requests to the Digilocker SDK.
   ///
   /// The [apiKey] must start with 'key_'.
   /// Throws an [Exception] if the key is invalid.
@@ -33,14 +33,14 @@ class DigilockerSDK {
     this.apiKey = apiKey;
   }
 
-  /// Registers an [EventListener] to receive DigiLocker SDK events.
+  /// Registers an [EventListener] to receive Digilocker SDK events.
   ///
   /// The [listener] will be notified of events during the SDK flow.
   void setEventListener(EventListener listener) {
     _eventListener = listener;
   }
 
-  /// Opens the DigiLocker SDK UI as a modal page.
+  /// Opens the Digilocker SDK UI as a modal page.
   ///
   /// Requires a [context] for navigation and a map of [options] for configuration.
   /// Throws an [Exception] if the API key is not set or required options are missing.
@@ -63,12 +63,12 @@ class DigilockerSDK {
           );
         },
         fullscreenDialog: true,
-        title: 'DigiLocker | Sandbox',
+        title: 'Digilocker | Sandbox',
       ),
     );
   }
 
-  /// Validates the required options for the DigiLocker SDK.
+  /// Validates the required options for the Digilocker SDK.
   ///
   /// Throws an [Exception] if any required option is missing.
   void _validateOptions(Map<String, dynamic> options) {

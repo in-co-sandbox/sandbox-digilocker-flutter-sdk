@@ -161,12 +161,12 @@ Example: `a7fac865-61a9-4589-b80c....`
 ---
 
 #### `brand` (object, required)
-Configuration for branding displayed in the DigiLocker interface.
+Configuration for branding displayed in the Digilocker interface.
 
 **Child attributes:**
 
 - **`name`** (string, required)  
-  Display name of your business or app shown during the DigiLocker flow.
+  Display name of your business or app shown during the Digilocker flow.
 
 - **`logo_url`** (string, required)  
   Publicly accessible HTTPS URL of your logo displayed within the SDK.

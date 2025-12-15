@@ -1,11 +1,11 @@
 part of '../digilocker_sdk.dart';
 
-/// Internal widget that displays the DigiLocker SDK web view and handles communication.
+/// Internal widget that displays the Digilocker SDK web view and handles communication.
 ///
 /// This widget is not intended to be used directly. It is shown as a modal page
 /// when the SDK is opened via [DigilockerSDK.open].
 class _DigilockerSdk extends StatefulWidget {
-  /// Callback invoked when the DigiLocker flow is closed.
+  /// Callback invoked when the Digilocker flow is closed.
   final VoidCallback onClose;
 
   /// Creates a [_DigilockerSdk] widget.
@@ -17,10 +17,10 @@ class _DigilockerSdk extends StatefulWidget {
 
 /// State for the [_DigilockerSdk] widget.
 class _DigilockerSdkState extends State<_DigilockerSdk> {
-  /// WebView settings for the DigiLocker SDK web view.
+  /// WebView settings for the Digilocker SDK web view.
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
-  /// Builds the DigiLocker SDK web view UI.
+  /// Builds the Digilocker SDK web view UI.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
