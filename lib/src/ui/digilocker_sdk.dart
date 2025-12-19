@@ -1,57 +1,113 @@
 part of '../digilocker_sdk.dart';
 
-/// Internal widget that displays the Digilocker SDK web view and handles communication.
-///
-/// This widget is not intended to be used directly. It is shown as a modal page
-/// when the SDK is opened via [DigilockerSDK.open].
 class _DigilockerSdk extends StatefulWidget {
-  /// Callback invoked when the Digilocker flow is closed.
   final VoidCallback onClose;
 
-  /// Creates a [_DigilockerSdk] widget.
   const _DigilockerSdk({required this.onClose});
 
   @override
   State<_DigilockerSdk> createState() => _DigilockerSdkState();
 }
 
-/// State for the [_DigilockerSdk] widget.
 class _DigilockerSdkState extends State<_DigilockerSdk> {
-  /// WebView settings for the Digilocker SDK web view.
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
-  /// Builds the Digilocker SDK web view UI.
+  bool _showNavbar = false;
+
+  late final String _homeHost = Uri.parse(DigilockerSDK.redirectUrl).host;
+
+  bool _isHome(Uri? url) => url?.host == _homeHost;
+
+  void _setNavbar(bool visible) {
+    if (!mounted) return;
+    if (_showNavbar != visible) {
+      setState(() => _showNavbar = visible);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: InAppWebView(
-          initialSettings: settings,
-          onLoadStart: (controller, url) {
-            controller.addJavaScriptHandler(
-              handlerName: 'DigilockerSDK_onMessage',
-              callback: (args) {
-                return _handleEvent(jsonDecode(args.first), controller);
-              },
-            );
-          },
-          initialUrlRequest: URLRequest(url: WebUri(DigilockerSDK.redirectUrl)),
+        child: Column(
+          children: [
+            _buildAnimatedNavbar(),
+            Expanded(
+              child: InAppWebView(
+                initialSettings: settings,
+                onLoadStart: (controller, url) {
+                  controller.addJavaScriptHandler(
+                    handlerName: 'DigilockerSDK_onMessage',
+                    callback: (args) {
+                      return _handleEvent(
+                        jsonDecode(args.first),
+                        controller,
+                      );
+                    },
+                  );
+                },
+                onLoadStop: (controller, url) {
+                  if (url == null) return;
+
+                  if (_isHome(url)) {
+                    _setNavbar(false);
+                  } else {
+                    Future.microtask(() {
+                      _setNavbar(true);
+                    });
+                  }
+                },
+                initialUrlRequest: URLRequest(
+                  url: WebUri(DigilockerSDK.redirectUrl),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  /// Handles events received from the web view via JavaScript channel.
-  ///
-  /// [event] is the event data from the web view.
-  /// [controller] is the web view controller for executing JavaScript.
-  void _handleEvent(Map<String, dynamic> event, InAppWebViewController controller) {
+  Widget _buildAnimatedNavbar() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      transitionBuilder: (child, animation) {
+        final slide = Tween<Offset>(
+          begin: const Offset(0, -1),
+          end: Offset.zero,
+        ).animate(animation);
+
+        return SlideTransition(
+          position: slide,
+          child: child,
+        );
+      },
+      child: _showNavbar
+          ? DigilockerNavbar(
+              key: const ValueKey('digilocker-navbar'),
+              onClose: widget.onClose,
+            )
+          : const SizedBox(
+              key: ValueKey('digilocker-navbar-empty'),
+            ),
+    );
+  }
+
+  void _handleEvent(
+    Map<String, dynamic> event,
+    InAppWebViewController controller,
+  ) {
     try {
       final eventType = event['type'] as String?;
+
       if (eventType == Events.initialized.value) {
         final options = DigilockerSDK.instance._options;
         options['api_key'] = DigilockerSDK.instance._apiKey;
+
         final readyEvent = _prepareEvent(Events.ready.value, options);
+
         controller.evaluateJavascript(
           source: '''
             window.postMessage(${jsonEncode(readyEvent)}, '*');
@@ -69,13 +125,11 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     }
   }
 
-  /// Prepares an event object to send to the web view.
-  ///
-  /// [type] is the event type string.
-  /// [data] is the event payload.
-  /// Returns a map representing the event.
-  Map<String, dynamic> _prepareEvent(String type, Map<String, dynamic> data) {
-    final event = {
+  Map<String, dynamic> _prepareEvent(
+    String type,
+    Map<String, dynamic> data,
+  ) {
+    return {
       'specversion': '1.0',
       'type': type,
       'source': 'flutter-app',
@@ -83,17 +137,9 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
       'datacontenttype': 'application/json',
       'data': data,
     };
-    return event;
   }
 
-  /// Triggers the registered [EventListener] with the given [event].
-  ///
-  /// If no event listener is set, logs a debug message.
   void _triggerEventListener(Map<String, dynamic> event) {
-    if (DigilockerSDK.instance._eventListener != null) {
-      DigilockerSDK.instance._eventListener!.onEvent(event);
-    } else {
-      debugPrint('No event listener set.');
-    }
+    DigilockerSDK.instance._eventListener?.onEvent(event);
   }
 }
