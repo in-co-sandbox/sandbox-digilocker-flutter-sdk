@@ -13,17 +13,7 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
   bool _showNavbar = false;
-
-  late final String _homeHost = Uri.parse(DigilockerSDK.redirectUrl).host;
-
-  bool _isHome(Uri? url) => url?.host == _homeHost;
-
-  void _setNavbar(bool visible) {
-    if (!mounted) return;
-    if (_showNavbar != visible) {
-      setState(() => _showNavbar = visible);
-    }
-  }
+  Uri _sdkUri = Uri.parse(DigilockerSDK.redirectUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +21,11 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildAnimatedNavbar(),
+            if (_showNavbar)
+              DigilockerNavbar(
+                title: 'Verification',
+                onClose: _handleNavBarClose,
+              ),
             Expanded(
               child: InAppWebView(
                 initialSettings: settings,
@@ -46,16 +40,19 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
                     },
                   );
                 },
-                onLoadStop: (controller, url) {
-                  if (url == null) return;
-
-                  if (_isHome(url)) {
-                    _setNavbar(false);
-                  } else {
-                    Future.microtask(() {
-                      _setNavbar(true);
+                shouldOverrideUrlLoading: (controller, navigationAction) async {
+                  final uri = navigationAction.request.url;
+                  if (uri != null && uri.host != _sdkUri.host) {
+                    setState(() {
+                      _showNavbar = true;
                     });
                   }
+                  if (uri != null && uri.host == _sdkUri.host) {
+                    setState(() {
+                      _showNavbar = false;
+                    });
+                  }
+                  return NavigationActionPolicy.ALLOW;
                 },
                 initialUrlRequest: URLRequest(
                   url: WebUri(DigilockerSDK.redirectUrl),
@@ -65,33 +62,6 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAnimatedNavbar() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 250),
-      switchInCurve: Curves.easeOut,
-      switchOutCurve: Curves.easeIn,
-      transitionBuilder: (child, animation) {
-        final slide = Tween<Offset>(
-          begin: const Offset(0, -1),
-          end: Offset.zero,
-        ).animate(animation);
-
-        return SlideTransition(
-          position: slide,
-          child: child,
-        );
-      },
-      child: _showNavbar
-          ? DigilockerNavbar(
-              key: const ValueKey('digilocker-navbar'),
-              onClose: widget.onClose,
-            )
-          : const SizedBox(
-              key: ValueKey('digilocker-navbar-empty'),
-            ),
     );
   }
 
@@ -123,6 +93,12 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     } catch (e) {
       debugPrint('Error: $e');
     }
+  }
+
+  void _handleNavBarClose() {
+    final event = _prepareEvent(Events.closed.value, {});
+    _triggerEventListener(event);
+    widget.onClose();
   }
 
   Map<String, dynamic> _prepareEvent(

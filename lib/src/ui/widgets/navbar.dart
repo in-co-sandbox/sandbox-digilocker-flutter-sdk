@@ -19,6 +19,7 @@ class DigilockerNavbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: title != null ? Text(title!) : null,
+      centerTitle: true, // Center the title
       automaticallyImplyLeading: false,
       actions: [
         IconButton(
