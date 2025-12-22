@@ -1,18 +1,28 @@
 part of '../digilocker_sdk.dart';
 
+/// Internal widget that displays the Digilocker SDK web view and handles communication.
+///
+/// This widget is not intended to be used directly. It is shown as a modal page
+/// when the SDK is opened via [DigilockerSDK.open].
 class _DigilockerSdk extends StatefulWidget {
+  /// Callback invoked when the Digilocker flow is closed.
   final VoidCallback onClose;
 
+  /// Creates a [_DigilockerSdk] widget.
   const _DigilockerSdk({required this.onClose});
 
   @override
   State<_DigilockerSdk> createState() => _DigilockerSdkState();
 }
 
+/// State for the [_DigilockerSdk] widget.
 class _DigilockerSdkState extends State<_DigilockerSdk> {
+  /// WebView settings for the Digilocker SDK web view.
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
+  // Whether to show the navigation bar.
   bool _showNavbar = false;
+
   final Uri _sdkUri = Uri.parse(DigilockerSDK.redirectUrl);
 
   @override
@@ -65,10 +75,11 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     );
   }
 
-  void _handleEvent(
-    Map<String, dynamic> event,
-    InAppWebViewController controller,
-  ) {
+  /// Handles events received from the web view via JavaScript channel.
+  ///
+  /// [event] is the event data from the web view.
+  /// [controller] is the web view controller for executing JavaScript.
+  void _handleEvent(Map<String, dynamic> event, InAppWebViewController controller) {
     try {
       final eventType = event['type'] as String?;
 
@@ -95,12 +106,18 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     }
   }
 
+  /// Handles the navigation bar close action.
   void _handleNavBarClose() {
     final event = _prepareEvent(Events.closed.value, {});
     _triggerEventListener(event);
     widget.onClose();
   }
 
+  /// Prepares an event object to send to the web view.
+  ///
+  /// [type] is the event type string.
+  /// [data] is the event payload.
+  /// Returns a map representing the event.
   Map<String, dynamic> _prepareEvent(
     String type,
     Map<String, dynamic> data,
@@ -115,6 +132,9 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     };
   }
 
+  /// Triggers the registered [EventListener] with the given [event].
+  ///
+  /// If no event listener is set, logs a debug message.
   void _triggerEventListener(Map<String, dynamic> event) {
     DigilockerSDK.instance._eventListener?.onEvent(event);
   }
