@@ -13,7 +13,7 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
   bool _showNavbar = false;
-  Uri _sdkUri = Uri.parse(DigilockerSDK.redirectUrl);
+  final Uri _sdkUri = Uri.parse(DigilockerSDK.redirectUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +25,7 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
               DigilockerNavbar(
                 title: 'Verification',
                 onClose: _handleNavBarClose,
+                themeOptions: DigilockerSDK.instance._options,
               ),
             Expanded(
               child: InAppWebView(
@@ -40,8 +41,8 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
                     },
                   );
                 },
-                shouldOverrideUrlLoading: (controller, navigationAction) async {
-                  final uri = navigationAction.request.url;
+                onPageCommitVisible: (controller, url) async {
+                  final uri = url;
                   if (uri != null && uri.host != _sdkUri.host) {
                     setState(() {
                       _showNavbar = true;
@@ -52,7 +53,6 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
                       _showNavbar = false;
                     });
                   }
-                  return NavigationActionPolicy.ALLOW;
                 },
                 initialUrlRequest: URLRequest(
                   url: WebUri(DigilockerSDK.redirectUrl),
