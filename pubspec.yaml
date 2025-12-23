@@ -1,6 +1,6 @@
 name: sandbox_digilocker_sdk
 description: "Embed Sandbox's Digilocker SDK in your flutter app."
-version: 1.0.0
+version: 1.0.1
 homepage: "https://sandbox.co.in/"
 
 environment:
