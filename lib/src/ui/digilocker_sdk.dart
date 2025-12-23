@@ -20,10 +20,21 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   /// WebView settings for the Digilocker SDK web view.
   final settings = InAppWebViewSettings(isInspectable: kDebugMode, javaScriptEnabled: true);
 
-  /// Builds the Digilocker SDK web view UI.
+  // Whether to show the navigation bar.
+  bool _showNavbar = false;
+
+  final String _sdkHost = Uri.parse(DigilockerSDK.redirectUrl).host;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _showNavbar
+          ? _DigilockerNavbar(
+              title: 'Verification',
+              onClose: _handleNavBarClose,
+              themeOptions: DigilockerSDK.instance._options,
+            )
+          : null,
       body: SafeArea(
         child: InAppWebView(
           initialSettings: settings,
@@ -31,11 +42,29 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
             controller.addJavaScriptHandler(
               handlerName: 'DigilockerSDK_onMessage',
               callback: (args) {
-                return _handleEvent(jsonDecode(args.first), controller);
+                return _handleEvent(
+                  jsonDecode(args.first),
+                  controller,
+                );
               },
             );
           },
-          initialUrlRequest: URLRequest(url: WebUri(DigilockerSDK.redirectUrl)),
+          onPageCommitVisible: (controller, url) {
+            final uri = url;
+            if (uri != null && uri.host != _sdkHost) {
+              setState(() {
+                _showNavbar = true;
+              });
+            }
+            if (uri != null && uri.host == _sdkHost) {
+              setState(() {
+                _showNavbar = false;
+              });
+            }
+          },
+          initialUrlRequest: URLRequest(
+            url: WebUri(DigilockerSDK.redirectUrl),
+          ),
         ),
       ),
     );
@@ -48,10 +77,13 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   void _handleEvent(Map<String, dynamic> event, InAppWebViewController controller) {
     try {
       final eventType = event['type'] as String?;
+
       if (eventType == Events.initialized.value) {
         final options = DigilockerSDK.instance._options;
         options['api_key'] = DigilockerSDK.instance._apiKey;
+
         final readyEvent = _prepareEvent(Events.ready.value, options);
+
         controller.evaluateJavascript(
           source: '''
             window.postMessage(${jsonEncode(readyEvent)}, '*');
@@ -69,13 +101,23 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
     }
   }
 
+  /// Handles the navigation bar close action.
+  void _handleNavBarClose() {
+    final event = _prepareEvent(Events.closed.value, {});
+    _triggerEventListener(event);
+    widget.onClose();
+  }
+
   /// Prepares an event object to send to the web view.
   ///
   /// [type] is the event type string.
   /// [data] is the event payload.
   /// Returns a map representing the event.
-  Map<String, dynamic> _prepareEvent(String type, Map<String, dynamic> data) {
-    final event = {
+  Map<String, dynamic> _prepareEvent(
+    String type,
+    Map<String, dynamic> data,
+  ) {
+    return {
       'specversion': '1.0',
       'type': type,
       'source': 'flutter-app',
@@ -83,17 +125,12 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
       'datacontenttype': 'application/json',
       'data': data,
     };
-    return event;
   }
 
   /// Triggers the registered [EventListener] with the given [event].
   ///
   /// If no event listener is set, logs a debug message.
   void _triggerEventListener(Map<String, dynamic> event) {
-    if (DigilockerSDK.instance._eventListener != null) {
-      DigilockerSDK.instance._eventListener!.onEvent(event);
-    } else {
-      debugPrint('No event listener set.');
-    }
+    DigilockerSDK.instance._eventListener?.onEvent(event);
   }
 }
