@@ -23,53 +23,48 @@ class _DigilockerSdkState extends State<_DigilockerSdk> {
   // Whether to show the navigation bar.
   bool _showNavbar = false;
 
-  final Uri _sdkUri = Uri.parse(DigilockerSDK.redirectUrl);
+  final String _sdkHost = Uri.parse(DigilockerSDK.redirectUrl).host;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _showNavbar
+          ? _DigilockerNavbar(
+              title: 'Verification',
+              onClose: _handleNavBarClose,
+              themeOptions: DigilockerSDK.instance._options,
+            )
+          : null,
       body: SafeArea(
-        child: Column(
-          children: [
-            if (_showNavbar)
-              DigilockerNavbar(
-                title: 'Verification',
-                onClose: _handleNavBarClose,
-                themeOptions: DigilockerSDK.instance._options,
-              ),
-            Expanded(
-              child: InAppWebView(
-                initialSettings: settings,
-                onLoadStart: (controller, url) {
-                  controller.addJavaScriptHandler(
-                    handlerName: 'DigilockerSDK_onMessage',
-                    callback: (args) {
-                      return _handleEvent(
-                        jsonDecode(args.first),
-                        controller,
-                      );
-                    },
-                  );
-                },
-                onPageCommitVisible: (controller, url) async {
-                  final uri = url;
-                  if (uri != null && uri.host != _sdkUri.host) {
-                    setState(() {
-                      _showNavbar = true;
-                    });
-                  }
-                  if (uri != null && uri.host == _sdkUri.host) {
-                    setState(() {
-                      _showNavbar = false;
-                    });
-                  }
-                },
-                initialUrlRequest: URLRequest(
-                  url: WebUri(DigilockerSDK.redirectUrl),
-                ),
-              ),
-            ),
-          ],
+        child: InAppWebView(
+          initialSettings: settings,
+          onLoadStart: (controller, url) {
+            controller.addJavaScriptHandler(
+              handlerName: 'DigilockerSDK_onMessage',
+              callback: (args) {
+                return _handleEvent(
+                  jsonDecode(args.first),
+                  controller,
+                );
+              },
+            );
+          },
+          onPageCommitVisible: (controller, url) {
+            final uri = url;
+            if (uri != null && uri.host != _sdkHost) {
+              setState(() {
+                _showNavbar = true;
+              });
+            }
+            if (uri != null && uri.host == _sdkHost) {
+              setState(() {
+                _showNavbar = false;
+              });
+            }
+          },
+          initialUrlRequest: URLRequest(
+            url: WebUri(DigilockerSDK.redirectUrl),
+          ),
         ),
       ),
     );

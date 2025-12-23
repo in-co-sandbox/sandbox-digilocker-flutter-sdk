@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+part of '../../digilocker_sdk.dart';
 
 /// A custom navigation bar with a close button on the top right
-class DigilockerNavbar extends StatelessWidget implements PreferredSizeWidget {
+class _DigilockerNavbar extends StatelessWidget implements PreferredSizeWidget {
   /// Callback invoked when the close button is pressed.
   final VoidCallback onClose;
 
@@ -11,9 +11,8 @@ class DigilockerNavbar extends StatelessWidget implements PreferredSizeWidget {
   /// Theme options containing seed color and mode
   final Map<String, dynamic>? themeOptions;
 
-  /// Creates a [DigilockerNavbar] widget.
-  const DigilockerNavbar({
-    super.key,
+  /// Creates a [_DigilockerNavbar] widget.
+  const _DigilockerNavbar({
     required this.onClose,
     this.title,
     this.themeOptions,
