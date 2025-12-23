@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:sandbox_digilocker_sdk/sandbox_digilocker_sdk.dart';
 import 'package:sandbox_digilocker_sdk/src/events/events.dart';
+import 'package:sandbox_digilocker_sdk/src/utils/material_theme_util.dart';
 
 part 'ui/digilocker_sdk.dart';
 part 'ui/widgets/navbar.dart';
